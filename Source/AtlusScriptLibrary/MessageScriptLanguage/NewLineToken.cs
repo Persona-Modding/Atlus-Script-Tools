@@ -23,4 +23,9 @@ public class NewLineToken : IToken
     {
         return "<new line>";
     }
+
+    public bool Equals(IToken obj) => obj.Kind == TokenKind.NewLine;
+
+    public static bool operator ==(NewLineToken x, NewLineToken y) => x.Equals(y);
+    public static bool operator !=(NewLineToken x, NewLineToken y) => !x.Equals(y);
 }

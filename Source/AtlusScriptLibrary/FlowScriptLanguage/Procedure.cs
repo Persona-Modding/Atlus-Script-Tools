@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 
 namespace AtlusScriptLibrary.FlowScriptLanguage;
 
@@ -47,4 +48,17 @@ public class Procedure
 
         return p;
     }
+
+    public bool Equals(Procedure other)
+    {
+        if (ReferenceEquals(this, other)) return true;
+        if (other == null) return false;
+
+        if (Name != other.Name) return false;
+        if (!Instructions.SequenceEqual(other.Instructions)) return false;
+        return (!Labels.SequenceEqual(other.Labels));
+    }
+
+    public static bool operator ==(Procedure x, Procedure y) => x.Equals(y);
+    public static bool operator !=(Procedure x, Procedure y) => !x.Equals(y);
 }

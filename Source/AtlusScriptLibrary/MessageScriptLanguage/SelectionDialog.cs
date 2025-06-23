@@ -75,4 +75,29 @@ public sealed class SelectionDialog : IDialog
     {
         return GetEnumerator();
     }
+
+    public bool Equals(SelectionDialog obj)
+    {
+        if (ReferenceEquals(this, obj)) return true;
+        if (obj == null) { return false; }
+
+        if (Name != obj.Name) return false;
+        if (Pattern != obj.Pattern) return false;
+        return (Options.SequenceEqual(obj.Options));
+    }
+
+    public bool Equals(IDialog obj)
+    {
+        if (ReferenceEquals(this, obj)) return true;
+        if (obj == null) { return false; }
+        if (obj.Kind != DialogKind.Selection) return false;
+
+        return Equals((SelectionDialog)obj);
+    }
+
+    public static bool operator ==(SelectionDialog x, SelectionDialog y) => x.Equals(y);
+    public static bool operator !=(SelectionDialog x, SelectionDialog y) => !x.Equals(y);
+
+    public static bool operator ==(SelectionDialog x, IDialog y) => x.Equals(y);
+    public static bool operator !=(SelectionDialog x, IDialog y) => !x.Equals(y);
 }

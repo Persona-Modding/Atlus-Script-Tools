@@ -123,4 +123,29 @@ public sealed class MessageDialog : IDialog
     {
         return GetEnumerator();
     }
+
+    public bool Equals(MessageDialog obj)
+    {
+        if (ReferenceEquals(this, obj)) return true;
+        if (obj == null) return false;
+
+        if (Name != obj.Name) return false;
+        if (Speaker != obj.Speaker) return false;
+        return (Pages.SequenceEqual(obj.Pages));
+    }
+
+    public bool Equals(IDialog obj)
+    {
+        if (ReferenceEquals(this, obj)) return true;
+        if (obj == null) return false;
+        if (obj.Kind != DialogKind.Message) return false;
+
+        return Equals((MessageDialog)obj);
+    }
+
+    public static bool operator ==(MessageDialog x, MessageDialog y) => x.Equals(y);
+    public static bool operator !=(MessageDialog x, MessageDialog y) => !x.Equals(y);
+
+    public static bool operator ==(MessageDialog x, IDialog y) => x.Equals(y);
+    public static bool operator !=(MessageDialog x, IDialog y) => !x.Equals(y);
 }

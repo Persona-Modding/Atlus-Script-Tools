@@ -35,4 +35,15 @@ public class Label
     {
         return new Label(Name, InstructionIndex);
     }
+
+    public bool Equals(Label other)
+    {
+        if (ReferenceEquals(this, other)) return true;
+        if (other == null) return false;
+
+        return Name == other.Name && InstructionIndex == other.InstructionIndex;
+    }
+
+    public static bool operator ==(Label x, Label y) => x.Equals(y);
+    public static bool operator !=(Label x, Label y) => !x.Equals(y);
 }

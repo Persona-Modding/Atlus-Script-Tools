@@ -58,4 +58,15 @@ public class TokenText : IEnumerable<IToken>
     {
         return ((IEnumerable<IToken>)Tokens).GetEnumerator();
     }
+
+    public bool Equals(TokenText obj)
+    {
+        if (ReferenceEquals(this, obj)) return true;
+        if (obj == null) { return false; }
+
+        return Tokens.SequenceEqual(obj.Tokens);
+    }
+
+    public static bool operator ==(TokenText x, TokenText y) { return x.Equals(y); }
+    public static bool operator !=(TokenText x, TokenText y) { return !x.Equals(y); }
 }
