@@ -710,5 +710,12 @@
     "Name": "FUNCTION_002F",
     "Description": "",
     "Parameters": []
+  },
+  {
+    "Index": "0x0030",
+    "ReturnType": "int",
+    "Name": "FUNCTION_0030",
+    "Description": "",
+    "Parameters": []
   }
 ]
