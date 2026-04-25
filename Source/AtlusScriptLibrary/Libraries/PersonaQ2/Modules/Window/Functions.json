@@ -71,17 +71,17 @@
     "Parameters": [
       {
         "Type": "int",
-        "Name": "param1",
+        "Name": "index",
         "Description": ""
       },
       {
         "Type": "int",
-        "Name": "param2",
+        "Name": "value",
         "Description": ""
       },
       {
         "Type": "int",
-        "Name": "param3",
+        "Name": "kind",
         "Description": ""
       }
     ],
