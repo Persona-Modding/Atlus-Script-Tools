@@ -8,12 +8,12 @@ namespace AtlusScriptLibrary.MessageScriptLanguage;
 /// <summary>
 /// Represents a dialog window in a message script.
 /// </summary>
-public sealed class MessageDialog : IDialog
+public sealed class MessageDialog : IDialog, IEquatable<MessageDialog>
 {
     /// <summary>
     /// Gets the text identifier of this dialog window.
     /// </summary>
-    public string Name { get; set; }
+    //public string Name { get; set; }
 
     /// <summary>
     /// Gets or sets the speaker of this dialog window.
@@ -25,7 +25,7 @@ public sealed class MessageDialog : IDialog
     /// </summary>
     public List<TokenText> Pages { get; }
 
-    List<TokenText> IDialog.Lines => Pages;
+    public override List<TokenText> Lines => Pages;
 
     /// <summary>
     /// Constructs a new dialog window with just an identifier.
@@ -112,40 +112,66 @@ public sealed class MessageDialog : IDialog
     /// <summary>
     /// Gets the message type of this window.
     /// </summary>
-    DialogKind IDialog.Kind => DialogKind.Message;
+    public override DialogKind Kind => DialogKind.Message;
 
-    public IEnumerator<TokenText> GetEnumerator()
+    public override IEnumerator<TokenText> GetEnumerator()
     {
         return Pages.GetEnumerator();
     }
 
-    IEnumerator IEnumerable.GetEnumerator()
+    /*IEnumerator IEnumerable.GetEnumerator()
     {
         return GetEnumerator();
-    }
+    }*/
 
     public bool Equals(MessageDialog obj)
     {
         if (ReferenceEquals(this, obj)) return true;
-        if (obj == null) return false;
+        if (obj is null) return false;
 
         if (Name != obj.Name) return false;
         if (Speaker != obj.Speaker) return false;
         return (Pages.SequenceEqual(obj.Pages));
     }
 
-    public bool Equals(IDialog obj)
+    /*public bool Equals(IDialog obj)
     {
         if (ReferenceEquals(this, obj)) return true;
-        if (obj == null) return false;
-        if (obj.Kind != DialogKind.Message) return false;
+        if (obj is null || obj.Kind != DialogKind.Message) return false;
+
+        return Equals((MessageDialog)obj);
+    }*/
+
+    public override bool Equals(object obj)
+    {
+        if (ReferenceEquals(this, obj)) return true;
+        if (obj is null || obj is not MessageDialog) return false;
 
         return Equals((MessageDialog)obj);
     }
 
-    public static bool operator ==(MessageDialog x, MessageDialog y) => x.Equals(y);
-    public static bool operator !=(MessageDialog x, MessageDialog y) => !x.Equals(y);
+    public static bool Equals(MessageDialog x, MessageDialog y)
+    {
+        if (ReferenceEquals(x, y)) return true;
+        if (x is null || y is null) return false;
+        return x.Equals(y);
+    }
 
-    public static bool operator ==(MessageDialog x, IDialog y) => x.Equals(y);
+    public override int GetHashCode()
+    {
+        int hashCode = 1327504663;
+        hashCode = hashCode * -1521134295 + EqualityComparer<string>.Default.GetHashCode(Name);
+        hashCode = hashCode * -1521134295 + EqualityComparer<ISpeaker>.Default.GetHashCode(Speaker);
+        hashCode = hashCode * -1521134295 + EqualityComparer<List<TokenText>>.Default.GetHashCode(Pages);
+        return hashCode;
+    }
+
+    public static bool operator ==(MessageDialog x, MessageDialog y) => Equals(x, y);
+    public static bool operator !=(MessageDialog x, MessageDialog y) => !Equals(x, y);
+
+    /*public static bool operator ==(MessageDialog x, IDialog y) => x.Equals(y);
     public static bool operator !=(MessageDialog x, IDialog y) => !x.Equals(y);
+
+    public static bool operator ==(IDialog x, MessageDialog y) => y.Equals(x);
+    public static bool operator !=(IDialog x, MessageDialog y) => !y.Equals(x);*/
 }

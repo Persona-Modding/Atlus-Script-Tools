@@ -1,6 +1,8 @@
-﻿namespace AtlusScriptLibrary.MessageScriptLanguage;
+﻿using System;
 
-public sealed class VariableSpeaker : ISpeaker
+namespace AtlusScriptLibrary.MessageScriptLanguage;
+
+public sealed class VariableSpeaker : ISpeaker, IEquatable<VariableSpeaker>
 {
     /// <summary>
     /// Gets the index of the speaker name variable.
@@ -25,8 +27,18 @@ public sealed class VariableSpeaker : ISpeaker
         return $"<variable name {Index}>";
     }
 
+    public bool Equals(VariableSpeaker other) => Index == other.Index;
+
+    public override int GetHashCode()
+    {
+        int hashCode = -1061823130;
+        hashCode = hashCode * -1521134295 + Index.GetHashCode();
+        hashCode = hashCode * -1521134295 + Kind.GetHashCode();
+        return hashCode;
+    }
+
     /// <summary>
     /// Gets the speaker type.
     /// </summary>
-    SpeakerKind ISpeaker.Kind => SpeakerKind.Variable;
+    public override SpeakerKind Kind => SpeakerKind.Variable;
 }

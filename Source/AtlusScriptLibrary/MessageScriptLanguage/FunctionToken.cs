@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace AtlusScriptLibrary.MessageScriptLanguage;
@@ -6,7 +7,7 @@ namespace AtlusScriptLibrary.MessageScriptLanguage;
 /// <summary>
 /// Represents a message script function token.
 /// </summary>
-public struct FunctionToken : IToken
+public struct FunctionToken : IToken, IEquatable<FunctionToken>
 {
     /// <summary>
     /// Gets the function table index.
@@ -85,6 +86,30 @@ public struct FunctionToken : IToken
         str += ")";
 
         return str;
+    }
+
+    public bool Equals(FunctionToken other)
+    {
+        if (this.FunctionTableIndex != other.FunctionTableIndex) return false;
+        if (this.FunctionIndex != other.FunctionIndex) return false;
+        if (this.UseIdentifierByte != other.UseIdentifierByte) return false;
+        return (this.Arguments.SequenceEqual(other.Arguments));
+    }
+
+    public override bool Equals(object obj)
+    {
+        if (obj is null || obj is not FunctionToken) return false;
+        return Equals((FunctionToken)obj);
+    }
+
+    public override int GetHashCode()
+    {
+        int hashCode = 2059593324;
+        hashCode = hashCode * -1521134295 + FunctionTableIndex.GetHashCode();
+        hashCode = hashCode * -1521134295 + FunctionIndex.GetHashCode();
+        hashCode = hashCode * -1521134295 + EqualityComparer<List<ushort>>.Default.GetHashCode(Arguments);
+        hashCode = hashCode * -1521134295 + UseIdentifierByte.GetHashCode();
+        return hashCode;
     }
 
     /// <summary>
