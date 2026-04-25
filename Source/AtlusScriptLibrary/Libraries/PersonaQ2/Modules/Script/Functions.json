@@ -336,14 +336,17 @@
   {
     "Index": "0x5016",
     "ReturnType": "void",
-    "Name": "SCR_FUNCTION_0016",
+    "Name": "PERSONA_EVOLUTION",
     "Description": "",
     "Parameters": [
       {
         "Type": "int",
-        "Name": "param1",
+        "Name": "partyId",
         "Description": ""
       }
+    ],
+    "Aliases": [
+      "SCR_FUNCTION_0016"
     ]
   },
   {

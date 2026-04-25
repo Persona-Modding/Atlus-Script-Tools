@@ -105,6 +105,12 @@ public class FlowScriptCompiler
     public ProcedureHookMode ProcedureHookMode { get; set; }
 
     /// <summary>
+    /// If true when there are procedure name conflicts an existing message of the same name will be overwritten. 
+    /// Otherwise an error will occur and the existing message will not be changed
+    /// </summary>
+    public bool OverwriteExistingProcedures { get; set; } = false;
+
+    /// <summary>
     /// If true when there are message name conflicts an existing message of the same name will be overwritten. 
     /// Otherwise an error will occur and the existing message will not be changed
     /// </summary>
@@ -410,6 +416,24 @@ public class FlowScriptCompiler
         }
     }
 
+    private void OverwriteDuplicateProcedures(CompilationUnit compilationUnit)
+    {
+        for (int i = 0; i < compilationUnit.Declarations.Count; i++)
+        {
+            var declaration = compilationUnit.Declarations[i];
+            if (declaration.DeclarationType != DeclarationType.Procedure) continue;
+
+            var last = compilationUnit.Declarations.FindLastIndex(dec => dec.Identifier.Text == declaration.Identifier.Text);
+            compilationUnit.Declarations[i] = compilationUnit.Declarations[last];
+            while (last != i)
+            {
+                Trace($"Removing duplicate procedure: {declaration.Identifier.Text} at {last}");
+                compilationUnit.Declarations.RemoveAt(last);
+                last = compilationUnit.Declarations.FindLastIndex(dec => dec.Identifier.Text == declaration.Identifier.Text);
+            }
+        }
+    }
+
     private bool TryCompileCompilationUnit(CompilationUnit compilationUnit)
     {
         Info($"Start compiling FlowScript compilation unit with version {mFormatVersion}");
@@ -430,6 +454,7 @@ public class FlowScriptCompiler
             } while (mReresolveImports);
         }
 
+        if (OverwriteExistingProcedures) OverwriteDuplicateProcedures(compilationUnit);
         ReorderProcedures(compilationUnit);
 
         // Evaluate declarations, return values, parameters etc

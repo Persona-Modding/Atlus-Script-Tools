@@ -55,6 +55,17 @@
         ]
       },
       {
+        "Index": 4,
+        "Name": "var",
+        "Description": "",
+        "Parameters": [
+          {
+            "Name": "index",
+            "Description": ""
+          }
+        ]
+      },
+      {
         "Index": 7,
         "Name": "unknown",
         "Description": "",

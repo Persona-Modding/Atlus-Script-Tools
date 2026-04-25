@@ -71,7 +71,7 @@
     "Parameters": [
       {
         "Type": "int",
-        "Name": "param1",
+        "Name": "msgId",
         "Description": "",
         "Semantic": "MsgId"
       },

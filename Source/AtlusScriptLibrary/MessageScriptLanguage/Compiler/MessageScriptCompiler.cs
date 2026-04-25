@@ -113,6 +113,7 @@ public class MessageScriptCompiler
                 }
             }
         }
+        ReorderMessages(mScript);
         messageScript = mScript; //TODO: maybe this should be checked again...
         return true;
     }
@@ -387,8 +388,42 @@ public class MessageScriptCompiler
             mVariables[dialog.Name] = script.Dialogs.Count;
             script.Dialogs.Add(dialog);
         }
+        ReorderMessages(script);
 
         return true;
+    }
+
+    private void ReorderMessages(MessageScript script)
+    {
+        var dummyText = new List<TokenText>()
+        {
+            new TokenTextBuilder()
+            .AddNewLine()
+            .Build()
+        };
+
+        for (int i = 0; i < script.Dialogs.Count; i++)
+        {
+            var dialog = script.Dialogs[i];
+            var nameParts = dialog.Name.Split('_');
+
+            if (nameParts.Length < 2) continue;
+            if (!nameParts[nameParts.Length - 2].Equals("index", StringComparison.OrdinalIgnoreCase)) continue;
+            if (!uint.TryParse(nameParts[nameParts.Length - 1], out var index))
+            {
+                LogError($"Unable to parse procedure index {nameParts[nameParts.Length - 1]}. Index will not be changed");
+                continue;
+            }
+
+            if (i == index) continue;
+            while (script.Dialogs.Count < index + 1)
+            {
+                script.Dialogs.Add(new MessageDialog($"DummyMessage_{script.Dialogs.Count}", dummyText));
+            }
+
+            script.Dialogs[i] = script.Dialogs[(int)index];
+            script.Dialogs[(int)index] = dialog;
+        }
     }
 
     private bool TryCompileMessageDialog(MessageScriptParser.MessageDialogContext context, out MessageDialog messageDialog)
