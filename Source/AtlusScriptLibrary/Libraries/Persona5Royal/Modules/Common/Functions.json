@@ -4154,13 +4154,14 @@
     "Parameters": [
       {
         "Type": "int",
-        "Name": "param1",
-        "Description": ""
+        "Name": "defaultValue",
+        "Description": "Value returned if player cancels"
       },
       {
         "Type": "int",
-        "Name": "param2",
-        "Description": ""
+        "Name": "msgId",
+        "Description": "",
+        "Semantic": "MsgId"
       }
     ],
     "Comment": ""
@@ -4623,8 +4624,9 @@
       },
       {
         "Type": "int",
-        "Name": "param2",
-        "Description": ""
+        "Name": "msgId",
+        "Description": "",
+        "Semantic": "MsgId"
       }
     ],
     "Comment": ""
@@ -5304,13 +5306,14 @@
     "Parameters": [
       {
         "Type": "int",
-        "Name": "param1",
-        "Description": ""
+        "Name": "defaultValue",
+        "Description": "Value returned if player cancels"
       },
       {
         "Type": "int",
-        "Name": "param2",
-        "Description": ""
+        "Name": "msgId",
+        "Description": "",
+        "Semantic": "MsgId"
       },
       {
         "Type": "int",
@@ -5333,13 +5336,14 @@
     "Parameters": [
       {
         "Type": "int",
-        "Name": "param1",
-        "Description": ""
+        "Name": "defaultValue",
+        "Description": "Value returned if player cancels"
       },
       {
         "Type": "int",
-        "Name": "param2",
-        "Description": ""
+        "Name": "msgId",
+        "Description": "",
+        "Semantic": "MsgId"
       }
     ],
     "Comment": ""
