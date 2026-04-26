@@ -173,7 +173,7 @@ public class MessageScriptCompiler
 
         if (!mImportedFileHashSet.Contains(messageScriptSourceHash))
         {
-            if (!TryCompile(messageScriptSource, out messageScript))
+            if (!TryCompile(messageScriptSource, out messageScript, true))
             {
                 LogError($"Import MessageScript failed to compile: {import}");
                 return false;
@@ -285,14 +285,15 @@ public class MessageScriptCompiler
     /// </summary>
     /// <param name="input">The input source.</param>
     /// <param name="script">The output of the compilaton. Is only guaranteed to be valid if the operation succeeded.</param>
+    /// <param name="delayReorder">Disables reordering of messages. For use with unmerged imports.</param>
     /// <returns>A boolean value indicating whether the compilation succeeded or not.</returns>
-    public bool TryCompile(string input, out MessageScript script)
+    public bool TryCompile(string input, out MessageScript script, bool delayReorder = false)
     {
         LogInfo("Parsing MessageScript source");
         var cst = MessageScriptParserHelper.ParseCompilationUnit(input, new AntlrErrorListener(this));
         LogInfo("Done parsing MessageScript source");
 
-        return TryCompile(cst, out script);
+        return TryCompile(cst, out script, delayReorder);
     }
 
     /// <summary>
@@ -326,11 +327,11 @@ public class MessageScriptCompiler
     }
 
     // Compilation methods
-    private bool TryCompile(MessageScriptParser.CompilationUnitContext context, out MessageScript script)
+    private bool TryCompile(MessageScriptParser.CompilationUnitContext context, out MessageScript script, bool delayReorder = false)
     {
         LogInfo(context, "Compiling MessageScript compilation unit");
 
-        if (!TryCompileImpl(context, out script))
+        if (!TryCompileImpl(context, out script, delayReorder))
         {
             LogError(context, "Failed to compile message script");
             return false;
@@ -341,7 +342,7 @@ public class MessageScriptCompiler
         return true;
     }
 
-    private bool TryCompileImpl(MessageScriptParser.CompilationUnitContext context, out MessageScript script)
+    private bool TryCompileImpl(MessageScriptParser.CompilationUnitContext context, out MessageScript script, bool delayReorder = false)
     {
         LogContextInfo(context);
 
@@ -388,7 +389,7 @@ public class MessageScriptCompiler
             mVariables[dialog.Name] = script.Dialogs.Count;
             script.Dialogs.Add(dialog);
         }
-        ReorderMessages(script);
+        if (!delayReorder) ReorderMessages(script);
 
         return true;
     }

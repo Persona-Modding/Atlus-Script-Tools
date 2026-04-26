@@ -962,7 +962,7 @@ public class FlowScriptCompiler
 
         if (!mImportedFileHashSet.Contains(messageScriptSourceHash))
         {
-            if (!messageScriptCompiler.TryCompile(messageScriptSource, out messageScript))
+            if (!messageScriptCompiler.TryCompile(messageScriptSource, out messageScript, true))
             {
                 Error(import, $"Import MessageScript failed to compile: {import.CompilationUnitFileName}");
                 return false;
@@ -1125,18 +1125,47 @@ public class FlowScriptCompiler
                         last = mScript.MessageScript.Dialogs.FindLastIndex(msg => msg.Name == dialog.Name);
                     }
                 }
+            }
+
+            var dummyText = new List<TokenText>()
+            {
+                new TokenTextBuilder()
+                .AddNewLine()
+                .Build()
+            };
+
+            // sadly this has to be a second loop to ensure all duplicate messages are weeded out before reordering
+            for (int i = 0; i < mScript.MessageScript.Dialogs.Count; i++)
+            {
+                var dialog = mScript.MessageScript.Dialogs[i];
+                var nameParts = dialog.Name.Split('_');
+
+                if (nameParts.Length >= 2 && nameParts[nameParts.Length - 2].Equals("index", StringComparison.OrdinalIgnoreCase))
+                {
+                    if (!uint.TryParse(nameParts[nameParts.Length - 1], out var index)) { Error($"Unable to parse procedure index {nameParts[nameParts.Length - 1]}. Index will not be changed"); }
+                    else if (i != index)
+                    {
+                        while (mScript.MessageScript.Dialogs.Count < index + 1)
+                        {
+                            mScript.MessageScript.Dialogs.Add(new MessageDialog($"DummyMessage_{mScript.MessageScript.Dialogs.Count}", dummyText));
+                        }
+
+                        mScript.MessageScript.Dialogs[i] = mScript.MessageScript.Dialogs[(int)index];
+                        mScript.MessageScript.Dialogs[(int)index] = dialog;
+                    }
+                }
 
                 var declaration = new VariableDeclaration
                 (
                     new VariableModifier(VariableModifierKind.Constant),
                     new TypeIdentifier(ValueKind.Int),
-                    new Identifier(ValueKind.Int, dialog.Name),
+                    new Identifier(ValueKind.Int, mScript.MessageScript.Dialogs[i].Name),
                     new UIntLiteral((uint)i)
                 );
 
                 if (!Scope.TryDeclareVariable(declaration))
                 {
-                    Error(declaration, $"Compiler generated constant for MessageScript dialog {dialog.Name} conflicts with another variable");
+                    Error(declaration, $"Compiler generated constant for MessageScript dialog {mScript.MessageScript.Dialogs[i].Name} conflicts with another variable");
                 }
                 else
                 {
