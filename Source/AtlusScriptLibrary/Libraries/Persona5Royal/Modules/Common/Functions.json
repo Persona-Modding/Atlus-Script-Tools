@@ -3114,17 +3114,17 @@
     "Index": "0x00c9",
     "ReturnType": "void",
     "Name": "SKILL_ADD_CMM",
-    "Description": "",
+    "Description": "Adds a skill to a party member as defined in cmpPsCoopSkillTable.ctd.",
     "Parameters": [
       {
         "Type": "int",
-        "Name": "param1",
-        "Description": ""
+        "Name": "commuId",
+        "Description": "Confidant ID of a party member."
       },
       {
         "Type": "int",
         "Name": "param2",
-        "Description": ""
+        "Description": "If set to 1, gives skills from ctd with matching party ID and 'rank' value of 11, and gives trait defined in cmpPsCoopChgPersonalTable.ctd. Otherwise gives skills from ctd based on party member's confidant rank."
       }
     ],
     "Comment": ""
@@ -3133,17 +3133,17 @@
     "Index": "0x00ca",
     "ReturnType": "int",
     "Name": "FRIEND_SKILL_ADD",
-    "Description": "",
+    "Description": "Used in confessional, and in jazz club for futaba.",
     "Parameters": [
       {
         "Type": "int",
-        "Name": "param1",
+        "Name": "partyId",
         "Description": ""
       },
       {
         "Type": "int",
         "Name": "param2",
-        "Description": ""
+        "Description": "Set to 0 in confessional, 1 in jazz club"
       }
     ],
     "Comment": ""
@@ -4415,16 +4415,16 @@
     "Index": "0x011b",
     "ReturnType": "int",
     "Name": "CHK_PERSONA_EXIST",
-    "Description": "",
+    "Description": "Check if persona stock contains persona with the given skill.",
     "Parameters": [
       {
         "Type": "int",
-        "Name": "param1",
+        "Name": "personaId",
         "Description": ""
       },
       {
         "Type": "int",
-        "Name": "param2",
+        "Name": "skillId",
         "Description": ""
       }
     ],
@@ -6507,17 +6507,17 @@
     "Index": "0x01a0",
     "ReturnType": "int",
     "Name": "FRIEND_GET_SP_SKILL",
-    "Description": "",
+    "Description": "Gives a party member a skill defined in cmpFriendPsSpSkillTable.ctd.",
     "Parameters": [
       {
         "Type": "int",
-        "Name": "param1",
+        "Name": "partyId",
         "Description": ""
       },
       {
         "Type": "int",
-        "Name": "param2",
-        "Description": ""
+        "Name": "entryId",
+        "Description": "ID of entry in ctd."
       }
     ],
     "Comment": ""
