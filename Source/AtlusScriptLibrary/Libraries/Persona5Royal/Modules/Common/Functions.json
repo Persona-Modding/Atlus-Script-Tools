@@ -3348,17 +3348,17 @@
     "Parameters": [
       {
         "Type": "int",
-        "Name": "param1",
+        "Name": "partyId",
         "Description": ""
       },
       {
         "Type": "int",
-        "Name": "param2",
+        "Name": "personaId",
         "Description": ""
       },
       {
         "Type": "int",
-        "Name": "param3",
+        "Name": "level",
         "Description": ""
       }
     ],
@@ -3394,27 +3394,27 @@
     "Parameters": [
       {
         "Type": "int",
-        "Name": "param1",
+        "Name": "knowledge",
         "Description": ""
       },
       {
         "Type": "int",
-        "Name": "param2",
+        "Name": "charm",
         "Description": ""
       },
       {
         "Type": "int",
-        "Name": "param3",
+        "Name": "proficiency",
         "Description": ""
       },
       {
         "Type": "int",
-        "Name": "param4",
+        "Name": "guts",
         "Description": ""
       },
       {
         "Type": "int",
-        "Name": "param5",
+        "Name": "kindness",
         "Description": ""
       }
     ],
@@ -3551,17 +3551,17 @@
     "Parameters": [
       {
         "Type": "int",
-        "Name": "param1",
+        "Name": "partyId",
         "Description": ""
       },
       {
         "Type": "int",
-        "Name": "param2",
+        "Name": "statToRaise",
         "Description": ""
       },
       {
         "Type": "int",
-        "Name": "param3",
+        "Name": "numStatPoints",
         "Description": ""
       }
     ],
@@ -5973,13 +5973,13 @@
     "Parameters": [
       {
         "Type": "int",
-        "Name": "param1",
+        "Name": "partyId",
         "Description": ""
       },
       {
         "Type": "int",
         "Name": "param2",
-        "Description": ""
+        "Description": "Set to 0 to get party member's level, 1 to get level of their equipped persona (useful for checking Joker level)"
       }
     ],
     "Comment": ""
