@@ -105,6 +105,12 @@ public class FlowScriptCompiler
     public ProcedureHookMode ProcedureHookMode { get; set; }
 
     /// <summary>
+    /// If true when there are procedure name conflicts an existing message of the same name will be overwritten. 
+    /// Otherwise an error will occur and the existing message will not be changed
+    /// </summary>
+    public bool OverwriteExistingProcedures { get; set; } = false;
+
+    /// <summary>
     /// If true when there are message name conflicts an existing message of the same name will be overwritten. 
     /// Otherwise an error will occur and the existing message will not be changed
     /// </summary>
@@ -410,6 +416,24 @@ public class FlowScriptCompiler
         }
     }
 
+    private void OverwriteDuplicateProcedures(CompilationUnit compilationUnit)
+    {
+        for (int i = 0; i < compilationUnit.Declarations.Count; i++)
+        {
+            var declaration = compilationUnit.Declarations[i];
+            if (declaration.DeclarationType != DeclarationType.Procedure) continue;
+
+            var last = compilationUnit.Declarations.FindLastIndex(dec => dec.Identifier.Text == declaration.Identifier.Text);
+            compilationUnit.Declarations[i] = compilationUnit.Declarations[last];
+            while (last != i)
+            {
+                Trace($"Removing duplicate procedure: {declaration.Identifier.Text} at {last}");
+                compilationUnit.Declarations.RemoveAt(last);
+                last = compilationUnit.Declarations.FindLastIndex(dec => dec.Identifier.Text == declaration.Identifier.Text);
+            }
+        }
+    }
+
     private bool TryCompileCompilationUnit(CompilationUnit compilationUnit)
     {
         Info($"Start compiling FlowScript compilation unit with version {mFormatVersion}");
@@ -430,6 +454,7 @@ public class FlowScriptCompiler
             } while (mReresolveImports);
         }
 
+        if (OverwriteExistingProcedures) OverwriteDuplicateProcedures(compilationUnit);
         ReorderProcedures(compilationUnit);
 
         // Evaluate declarations, return values, parameters etc
@@ -937,7 +962,7 @@ public class FlowScriptCompiler
 
         if (!mImportedFileHashSet.Contains(messageScriptSourceHash))
         {
-            if (!messageScriptCompiler.TryCompile(messageScriptSource, out messageScript))
+            if (!messageScriptCompiler.TryCompile(messageScriptSource, out messageScript, true))
             {
                 Error(import, $"Import MessageScript failed to compile: {import.CompilationUnitFileName}");
                 return false;
@@ -1100,18 +1125,53 @@ public class FlowScriptCompiler
                         last = mScript.MessageScript.Dialogs.FindLastIndex(msg => msg.Name == dialog.Name);
                     }
                 }
+            }
 
+            var dummyText = new List<TokenText>()
+            {
+                new TokenTextBuilder()
+                .AddNewLine()
+                .Build()
+            };
+
+            // sadly this has to be a second loop to ensure all duplicate messages are weeded out before reordering
+            for (int i = 0; i < mScript.MessageScript.Dialogs.Count; i++)
+            {
+                var dialog = mScript.MessageScript.Dialogs[i];
+                var nameParts = dialog.Name.Split('_');
+
+                if (nameParts.Length < 2) continue;
+                if (!nameParts[nameParts.Length - 2].Equals("index", StringComparison.OrdinalIgnoreCase)) continue;
+                if (!uint.TryParse(nameParts[nameParts.Length - 1], out var index))
+                {
+                    Error($"Unable to parse procedure index {nameParts[nameParts.Length - 1]}. Index will not be changed");
+                    continue;
+                }
+
+                if (i == index) continue;
+                while (mScript.MessageScript.Dialogs.Count < index + 1)
+                {
+                    mScript.MessageScript.Dialogs.Add(new MessageDialog($"DummyMessage_{mScript.MessageScript.Dialogs.Count}", dummyText));
+                }
+
+                mScript.MessageScript.Dialogs[i] = mScript.MessageScript.Dialogs[(int)index];
+                mScript.MessageScript.Dialogs[(int)index] = dialog;
+            }
+
+            // and because duplicate compiler constant can be declared if message gets reordered to earlier index, i guess this has to be *another* goddamn loop
+            for (int i = 0; i < mScript.MessageScript.Dialogs.Count; i++)
+            { 
                 var declaration = new VariableDeclaration
                 (
                     new VariableModifier(VariableModifierKind.Constant),
                     new TypeIdentifier(ValueKind.Int),
-                    new Identifier(ValueKind.Int, dialog.Name),
+                    new Identifier(ValueKind.Int, mScript.MessageScript.Dialogs[i].Name),
                     new UIntLiteral((uint)i)
                 );
 
                 if (!Scope.TryDeclareVariable(declaration))
                 {
-                    Error(declaration, $"Compiler generated constant for MessageScript dialog {dialog.Name} conflicts with another variable");
+                    Error(declaration, $"Compiler generated constant for MessageScript dialog {mScript.MessageScript.Dialogs[i].Name} conflicts with another variable");
                 }
                 else
                 {
