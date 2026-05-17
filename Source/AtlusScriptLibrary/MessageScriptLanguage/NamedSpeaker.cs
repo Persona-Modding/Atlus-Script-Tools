@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 
 namespace AtlusScriptLibrary.MessageScriptLanguage;
@@ -6,7 +7,7 @@ namespace AtlusScriptLibrary.MessageScriptLanguage;
 /// <summary>
 /// Represents a named dialogue message speaker.
 /// </summary>
-public sealed class NamedSpeaker : ISpeaker, IEnumerable<IToken>
+public sealed class NamedSpeaker : ISpeaker, IEnumerable<IToken>, IEquatable<NamedSpeaker>
 {
     /// <summary>
     /// Gets the name of the speaker.
@@ -56,8 +57,18 @@ public sealed class NamedSpeaker : ISpeaker, IEnumerable<IToken>
         return ((IEnumerable<IToken>)Name).GetEnumerator();
     }
 
+    public bool Equals(NamedSpeaker other) => Name == other.Name;
+
+    public override int GetHashCode()
+    {
+        int hashCode = 1612084825;
+        hashCode = hashCode * -1521134295 + EqualityComparer<TokenText>.Default.GetHashCode(Name);
+        hashCode = hashCode * -1521134295 + Kind.GetHashCode();
+        return hashCode;
+    }
+
     /// <summary>
     /// Gets the speaker type.
     /// </summary>
-    SpeakerKind ISpeaker.Kind => SpeakerKind.Named;
+    public override SpeakerKind Kind => SpeakerKind.Named;
 }

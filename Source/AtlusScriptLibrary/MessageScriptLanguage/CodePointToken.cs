@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace AtlusScriptLibrary.MessageScriptLanguage;
@@ -6,7 +7,7 @@ namespace AtlusScriptLibrary.MessageScriptLanguage;
 /// <summary>
 /// Represents a code point token. This maps to a glyph on the game's font.
 /// </summary>
-public struct CodePointToken : IToken
+public struct CodePointToken : IToken, IEquatable<CodePointToken>
 {
     public IReadOnlyList<byte> Bytes { get; }
 
@@ -49,4 +50,13 @@ public struct CodePointToken : IToken
     {
         return $"[{string.Join(" ", Bytes.Select(x => x.ToString("X2")))}]";
     }
+
+    public bool Equals(CodePointToken other) => Bytes.SequenceEqual(other.Bytes);
+    public override bool Equals(object obj)
+    {
+        if (obj is null || obj is not CodePointToken) return false;
+        return Equals((CodePointToken)obj);
+    }
+
+    public override int GetHashCode() => Bytes.GetHashCode();
 }

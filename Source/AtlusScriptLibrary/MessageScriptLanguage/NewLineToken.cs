@@ -1,9 +1,11 @@
-﻿namespace AtlusScriptLibrary.MessageScriptLanguage;
+﻿using System;
+
+namespace AtlusScriptLibrary.MessageScriptLanguage;
 
 /// <summary>
 /// Represents a single newline token.
 /// </summary>
-public class NewLineToken : IToken
+public class NewLineToken : IToken, IEquatable<NewLineToken>
 {
     /// <summary>
     /// The constant value of a newline token.
@@ -23,4 +25,11 @@ public class NewLineToken : IToken
     {
         return "<new line>";
     }
+
+    public bool Equals(NewLineToken other) => true;
+    public override bool Equals(object obj) => obj is TokenKind.NewLine;
+    public override int GetHashCode() => Kind.GetHashCode();
+
+    public static bool operator ==(NewLineToken x, NewLineToken y) => x.Equals(y);
+    public static bool operator !=(NewLineToken x, NewLineToken y) => !x.Equals(y);
 }

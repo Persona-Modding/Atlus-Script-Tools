@@ -8,7 +8,7 @@ namespace AtlusScriptLibrary.MessageScriptLanguage;
 /// <summary>
 /// Represents a single line of text.
 /// </summary>
-public class TokenText : IEnumerable<IToken>
+public class TokenText : IEnumerable<IToken>, IEquatable<TokenText>
 {
     /// <summary>
     /// Gets the list of tokens contained in this line of text.
@@ -58,4 +58,32 @@ public class TokenText : IEnumerable<IToken>
     {
         return ((IEnumerable<IToken>)Tokens).GetEnumerator();
     }
+
+    public bool Equals(TokenText obj)
+    {
+        if (ReferenceEquals(this, obj)) return true;
+        if (obj is null) { return false; }
+
+        return Tokens.SequenceEqual(obj.Tokens, new TokenComparer());
+    }
+
+    public override bool Equals(object obj)
+    {
+        if (ReferenceEquals(this, obj)) return true;
+        if (obj is null || obj is not TokenText) return false;
+
+        return Equals((TokenText)obj);
+    }
+
+    public static bool Equals(TokenText x, TokenText y)
+    {
+        if (ReferenceEquals(x, y)) return true;
+        if (x is null || y is null) return false;
+        return x.Equals(y);
+    }
+
+    public override int GetHashCode() => Tokens.GetHashCode();
+
+    public static bool operator ==(TokenText x, TokenText y) => Equals(x, y);
+    public static bool operator !=(TokenText x, TokenText y) => !Equals(x, y);
 }
